@@ -272,7 +272,7 @@ def checkout_api():
         customer_phone=customer_data.get('phone'),
         customer_address=customer_data.get('address'),
         destination_branch=customer_data.get('branch'),
-        transport_company=customer_data.get('transport'),
+        transport_company=db.Column(db.String(50), nullable=True),
         payment_method=customer_data.get('paymentMethod')
     )
     
