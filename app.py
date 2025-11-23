@@ -111,7 +111,7 @@ def add_product():
         cost = float(request.form.get('cost', 0.0))
         
         image_file = request.files['image']
-        if image_file: # บรรทัด 141 ที่มีปัญหา Indentation Error รอบที่แล้ว
+        if image_file: 
             image_filename = image_file.filename
             # ตรวจสอบและสร้างโฟลเดอร์ static/product_images ถ้ายังไม่มี
             upload_folder = os.path.join('static', 'product_images')
