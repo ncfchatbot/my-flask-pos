@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายละเอียดออเดอร์ #{{ order.id }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 10000) | random }}">
+    <style>
+        .btn-print { background-color: #6610f2; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; margin-top: 10px; }
+        .btn-print:hover { background-color: #520dc2; }
+        .customer-info-box { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
+        .customer-info-box h3 { margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .info-grid { display: grid; grid-template-columns: auto 1fr; gap: 10px; }
+        .info-label { font-weight: bold; color: #555; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>รายละเอียดออเดอร์</h1>
+        <nav>
+            <a href="{{ url_for('orders') }}">กลับหน้าประวัติ</a>
+        </nav>
+    </header>
+    <main>
+        <div style="text-align: right; margin-bottom: 20px;">
+            <a href="{{ url_for('print_receipt', order_id=order.id) }}" target="_blank" class="btn-print">🖨️ พิมพ์ใบเสร็จ (ภาษาลาว)</a>
+        </div>
+
+        <div class="order-info-box">
+            <div class="order-header">
+                <h2>ออเดอร์ #{{ order.id }}</h2>
+                <p><strong>วันที่:</strong> {{ order.order_date.strftime('%d/%m/%Y %H:%M:%S') }}</p>
+            </div>
+            <div class="order-statuses">
+                <div class="status-item">
+                    <span>สถานะการจ่าย:</span>
+                    <span class="status-badge status-{{ order.payment_status|lower }}">{{ order.payment_status }}</span>
+                </div>
+                <div class="status-item">
+                    <span>สถานะออเดอร์:</span>
+                    <span class="status-badge status-{{ order.order_status|lower }}">{{ order.order_status }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="customer-info-box">
+            <h3>ข้อมูลลูกค้าและการจัดส่ง</h3>
+            <div class="info-grid">
+                <span class="info-label">ชื่อลูกค้า:</span> <span>{{ order.customer_name or '-' }}</span>
+                <span class="info-label">เบอร์โทร:</span> <span>{{ order.customer_phone or '-' }}</span>
+                <span class="info-label">ที่อยู่:</span> <span>{{ order.customer_address or '-' }}</span>
+                <span class="info-label">สาขา:</span> <span>{{ order.destination_branch or '-' }}</span>
+                <span class="info-label">บริษัทขนส่ง:</span> <span>{{ order.transport_company or '-' }}</span>
+                <span class="info-label">วิธีชำระเงิน:</span> <span>{{ order.payment_method or '-' }}</span>
+            </div>
+        </div>
+
+        <h3>รายการสินค้าที่ซื้อ</h3>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>ชื่อสินค้า</th>
+                    <th>ราคาต่อหน่วย</th>
+                    <th>จำนวน</th>
+                    <th>รวม</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                    <tr>
+                        <td>{{ item.product_name }}</td>
+                        <td>LAK {{ "{:,.2f}".format(item.price_at_purchase) }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>LAK {{ "{:,.2f}".format(item.price_at_purchase * item.quantity) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="3" style="text-align: right;">ยอดรวมสุทธิ:</td>
+                    <td class="price-cell">LAK {{ "{:,.2f}".format(order.total_price) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </main>
+    <footer>
+        <p>&copy; 2023 My POS System</p>
+    </footer>
+</body>
+</html>

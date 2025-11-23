@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เพิ่มสินค้าใหม่ - My POS System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 10000) | random }}">
+</head>
+<body>
+    <header>
+        <h1>เพิ่มสินค้าใหม่</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">กลับหน้าแดชบอร์ด</a>
+        </nav>
+    </header>
+    <main>
+        <form action="{{ url_for('add_product') }}" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="code">รหัสสินค้า (Code):</label>
+                <input type="text" id="code" name="code" required placeholder="เช่น P001">
+            </div>
+            <div>
+                <label for="name">ชื่อสินค้า (Name):</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="image">รูปภาพสินค้า (Image):</label>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            <div>
+                <label for="cost" style="color: #dc3545;">ราคาต้นทุน (Cost):</label>
+                <input type="number" id="cost" name="cost" step="0.01" placeholder="0.00">
+            </div>
+            <div>
+                <label for="price">ราคาขาย (Price):</label>
+                <input type="number" id="price" name="price" step="0.01" required placeholder="0.00">
+            </div>
+            <div>
+                <label for="stock">จำนวนสต็อก (Stock):</label>
+                <input type="number" id="stock" name="stock" required>
+            </div>
+            <button type="submit">บันทึกสินค้า</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2023 My POS System</p>
+    </footer>
+</body>
+</html>

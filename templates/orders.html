@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ประวัติการขาย - My POS System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 10000) | random }}">
+</head>
+<body>
+    <header>
+        <h1>ประวัติการขาย (Order History)</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">หน้าหลัก</a>
+            <a href="{{ url_for('pos') }}">หน้าขาย (POS)</a>
+        </nav>
+    </header>
+    <main>
+        <h2>รายการออเดอร์ทั้งหมด</h2>
+        {% if orders %}
+            <div style="overflow-x: auto;">
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>เลขที่บิล</th>
+                            <th>วันที่/เวลา</th>
+                            <th>ลูกค้า</th>
+                            <th>ยอดรวม</th>
+                            <th>สถานะการจ่าย</th>
+                            <th>สถานะออเดอร์</th>
+                            <th>ดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td>#{{ order.id }}</td>
+                                <td>{{ order.order_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>{{ order.customer_name or '-' }}</td>
+                                <td class="price-cell">LAK {{ "{:,.2f}".format(order.total_price) }}</td>
+                                <td>
+                                    <form action="{{ url_for('update_payment_status', order_id=order.id) }}" method="POST">
+                                        <select name="payment_status" onchange="this.form.submit()" class="status-select status-{{ order.payment_status|lower }}">
+                                            <option value="Pending" {% if order.payment_status == 'Pending' %}selected{% endif %}>รอชำระ</option>
+                                            <option value="Paid" {% if order.payment_status == 'Paid' %}selected{% endif %}>ชำระแล้ว</option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="{{ url_for('update_order_status', order_id=order.id) }}" method="POST">
+                                        <select name="order_status" onchange="this.form.submit()" class="status-select status-{{ order.order_status|lower }}">
+                                            <option value="Pending" {% if order.order_status == 'Pending' %}selected{% endif %}>รอดำเนินการ</option>
+                                            <option value="Shipped" {% if order.order_status == 'Shipped' %}selected{% endif %}>จัดส่งแล้ว</option>
+                                            <option value="Completed" {% if order.order_status == 'Completed' %}selected{% endif %}>สำเร็จ</option>
+                                            <option value="Cancelled" {% if order.order_status == 'Cancelled' %}selected{% endif %}>ยกเลิก</option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('order_detail', order_id=order.id) }}" class="view-btn">ดูรายละเอียด</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>ยังไม่มีประวัติการขาย</p>
+        {% endif %}
+    </main>
+    <footer>
+        <p>&copy; 2023 My POS System</p>
+    </footer>
+</body>
+</html>

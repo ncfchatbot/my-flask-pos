@@ -1,0 +1,143 @@
+
+/* style.css - Global Styles */
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; color: #333; }
+header { background-color: #343a40; color: white; padding: 1rem 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+header h1 { text-align: center; margin: 0; font-size: 1.8rem; }
+nav { text-align: center; margin-top: 10px; }
+nav a { color: #adb5bd; text-decoration: none; padding: 8px 15px; margin: 0 5px; border-radius: 4px; transition: all 0.3s ease; border: 1px solid transparent; }
+nav a:hover { color: white; background-color: #495057; border-color: #6c757d; }
+main { padding: 20px; max-width: 1200px; margin: 20px auto; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+footer { text-align: center; padding: 20px; margin-top: 20px; color: #6c757d; font-size: 0.9em; }
+h2 { color: #343a40; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
+
+/* Forms */
+form { max-width: 600px; margin: 0 auto; }
+form div { margin-bottom: 15px; }
+label { display: block; margin-bottom: 5px; font-weight: bold; }
+input[type="text"], input[type="number"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+button, .button { display: inline-block; background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font-size: 1rem; transition: background-color 0.3s ease; }
+button:hover, .button:hover { background-color: #0056b3; }
+
+/* Product Grid (Dashboard) */
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 20px 0; }
+.product-card { background: white; border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; }
+.product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.card-img-top { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid #eee; }
+.card-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.card-body h3 { margin: 0 0 10px; font-size: 1.1rem; color: #333; }
+.card-body p { margin: 5px 0; color: #666; font-size: 0.95rem; }
+.card-body .price { font-weight: bold; color: #28a745; font-size: 1.1rem; }
+.product-actions { margin-top: 15px; display: flex; gap: 10px; }
+.edit-btn { background-color: #ffc107; color: #212529; flex: 1; text-align: center; padding: 8px; font-size: 0.9rem; }
+.edit-btn:hover { background-color: #e0a800; }
+.delete-btn { background-color: #dc3545; flex: 1; padding: 8px; font-size: 0.9rem; }
+.delete-btn:hover { background-color: #c82333; }
+
+/* --- POS Specific Styles --- */
+.pos-container {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 140px); /* ความสูงเต็มจอ ลบส่วน header */
+    align-items: flex-start;
+}
+
+/* พื้นที่แสดงสินค้าฝั่งซ้าย */
+.pos-products {
+    flex: 2;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    height: 100%;
+}
+
+/* พื้นที่ตะกร้าฝั่งขวา */
+.pos-cart {
+    flex: 1;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- POS Product Grid Layout --- */
+.pos-grid-layout {
+    display: grid;
+    /* ปรับขนาดคอลัมน์ขั้นต่ำให้ใหญ่ขึ้นเล็กน้อยเพื่อให้รูปมีที่ว่าง */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
+}
+
+/* ปรับแต่งการ์ดสินค้าเฉพาะในหน้า POS */
+.pos-card {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    transition: all 0.2s;
+    background: #fff;
+}
+.pos-card:hover { border-color: #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: translateY(-3px); }
+
+/* --- แก้ไขจุดที่ 1: ปรับขนาดรูปภาพในหน้า POS ให้ใหญ่และเห็นครบ --- */
+.pos-card img {
+    width: 100%;
+    height: 200px; /* เพิ่มความสูงให้ภาพใหญ่ขึ้น (จากเดิม 120px) */
+    object-fit: contain; /* สำคัญ: ทำให้เห็นภาพครบทั้งใบ ไม่โดนตัด */
+    margin-bottom: 10px;
+    background-color: #fcfcfc; /* สีพื้นหลังจางๆ เวลารูปไม่เต็มพื้นที่ */
+    border-radius: 4px;
+}
+
+.pos-card h3 {
+    font-size: 1.1em;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.pos-card .price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #28a745;
+    text-align: center;
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    margin-top: 10px;
+    background-color: #007bff;
+    font-weight: bold;
+}
+.add-to-cart-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Styles for Cart */
+#cart-items {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.cart-summary { text-align: right; }
+.checkout-btn { width: 100%; padding: 15px; font-size: 1.2em; background-color: #28a745; margin-top: 10px; }
+.checkout-btn:hover { background-color: #218838; }
+.checkout-btn:disabled { background-color: #ccc; cursor: not-allowed; }

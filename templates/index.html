@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แดชบอร์ด - My POS System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 10000) | random }}">
+    <style>
+        /* CSS เฉพาะหน้า Dashboard */
+        .dashboard-summary { display: flex; gap: 20px; margin: 20px auto; max-width: 900px; flex-wrap: wrap; }
+        .summary-box { flex: 1; min-width: 200px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); text-align: center; }
+        .summary-box h3 { margin: 0 0 10px 0; color: #555; font-size: 1.1em; }
+        .summary-box .value { font-size: 1.8em; font-weight: bold; }
+        .val-sales { color: #007bff; }
+        /* --- ซ่อน CSS ของต้นทุนและกำไร --- */
+        /* .val-cost { color: #dc3545; } .val-profit { color: #28a745; } */
+
+        .data-management { background-color: white; padding: 20px; margin: 20px auto; max-width: 900px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .upload-section { display: flex; align-items: center; gap: 10px; border: 1px solid #eee; padding: 10px; border-radius: 5px; }
+        .btn-download { background-color: #6c757d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 0.9em; }
+        .btn-download:hover { background-color: #5a6268; }
+        .btn-upload { background-color: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .btn-upload:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>แดชบอร์ดภาพรวม (Dashboard)</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">หน้าหลัก</a>
+            <a href="{{ url_for('orders') }}">ประวัติการขาย</a>
+            <a href="{{ url_for('add_product') }}">เพิ่มสินค้า</a>
+            <a href="{{ url_for('pos') }}" style="background-color: #28a745; color: white; border-color: #28a745;">ไปหน้าขาย (POS)</a>
+        </nav>
+    </header>
+    <main>
+        <section class="dashboard-summary">
+            <div class="summary-box">
+                <h3>ยอดขายรวม (Total Sales)</h3>
+                <div class="value val-sales">LAK {{ "{:,.2f}".format(total_sales) }}</div>
+            </div>
+            </section>
+
+        <section class="data-management">
+            <div class="upload-section">
+                <form action="{{ url_for('upload_products') }}" method="POST" enctype="multipart/form-data">
+                    <strong style="margin-right: 10px;">นำเข้า Excel:</strong>
+                    <input type="file" name="file" accept=".xlsx, .xls" required>
+                    <button type="submit" class="btn-upload">อัปโหลด</button>
+                </form>
+                <small style="color: #666; display: block; margin-top: 5px;">(Columns: Code, Name, Cost, Price, Stock)</small>
+            </div>
+            <div class="download-section">
+                <strong>ส่งออกข้อมูล:</strong>
+                <a href="{{ url_for('download_products') }}" class="btn-download">ข้อมูลสินค้า</a>
+                <a href="{{ url_for('download_orders') }}" class="btn-download">ประวัติการขาย</a>
+            </div>
+        </section>
+
+        <section id="product-list">
+            <h2>รายการสินค้าปัจจุบัน</h2>
+            <div class="product-grid">
+                {% if products %}
+                    {% for product in products %}
+                        <div class="product-card dashboard-card">
+                            <img src="{{ url_for('static', filename='product_images/' + product.image_file) }}" alt="{{ product.name }}" class="card-img-top">
+                            <div class="card-body">
+                                <h3><small>#{{ product.code }}</small> {{ product.name }}</h3>
+                                <p class="price">ราคาขาย: LAK {{ "{:,.2f}".format(product.price) }}</p>
+                                <p>สต็อก: {{ product.stock }}</p>
+                                <div class="product-actions">
+                                    <a href="{{ url_for('edit_product', product_id=product.id) }}" class="button edit-btn">แก้ไข</a>
+                                    <form action="{{ url_for('delete_product', product_id=product.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('ยืนยันการลบสินค้า {{ product.name }}?');">
+                                        <button type="submit" class="button delete-btn">ลบ</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; width: 100%;">ยังไม่มีสินค้าในระบบ</p>
+                {% endif %}
+            </div>
+        </section>
+        
+    </main>
+    <footer>
+        <p>&copy; 2023 My POS System</p>
+    </footer>
+</body>
+</html>

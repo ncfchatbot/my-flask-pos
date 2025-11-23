@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบขายหน้าร้าน (POS) - My POS System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 10000) | random }}">
+    <style>
+        /* สไตล์เพิ่มเติมสำหรับฟอร์มลูกค้าในหน้า POS */
+        .customer-form {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+        }
+        .customer-form h3 { margin-top: 0; font-size: 1.1em; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; /* สำคัญเพื่อให้ padding ไม่ทำให้ input ล้น */
+        }
+        .cart-summary { margin-top: 20px; border-top: 2px solid #eee; padding-top: 15px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ระบบขายหน้าร้าน (POS Terminal)</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">กลับหน้าแดชบอร์ด</a>
+            <a href="{{ url_for('orders') }}">ประวัติการขาย</a>
+        </nav>
+    </header>
+    <main>
+        <div class="pos-container">
+            <div class="pos-left-panel">
+                <h2>เลือกสินค้า</h2>
+                <div id="product-list-container" class="product-grid">
+                    <p>กำลังโหลดข้อมูลสินค้า...</p>
+                </div>
+            </div>
+
+            <div class="pos-right-panel" style="overflow-y: auto; max-height: 80vh;">
+                <h2>ตะกร้าสินค้า</h2>
+                <div class="cart-area">
+                    <div class="cart-items">
+                        <p>ยังไม่มีสินค้าในตะกร้า</p>
+                    </div>
+                </div>
+
+                <div class="customer-form">
+                    <h3>ข้อมูลลูกค้าและการจัดส่ง</h3>
+                    <div class="form-group">
+                        <label for="cus-name">ชื่อลูกค้า:</label>
+                        <input type="text" id="cus-name" placeholder="ระบุชื่อลูกค้า">
+                    </div>
+                    <div class="form-group">
+                        <label for="cus-phone">เบอร์โทรศัพท์:</label>
+                        <input type="text" id="cus-phone" placeholder="ระบุเบอร์โทร">
+                    </div>
+                    <div class="form-group">
+                        <label for="cus-address">ที่อยู่จัดส่ง:</label>
+                        <textarea id="cus-address" rows="2" placeholder="ระบุที่อยู่"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="cus-branch">สาขาปลายทาง (ถ้ามี):</label>
+                        <input type="text" id="cus-branch" placeholder="ระบุสาขา">
+                    </div>
+                    <div class="form-group">
+                        <label for="transport-company">บริษัทขนส่ง:</label>
+                        <select id="transport-company">
+                            <option value="">-- เลือกขนส่ง --</option>
+                            <option value="อนุชิต">1. อนุชิต (Anuchit)</option>
+                            <option value="มีไชย">2. มีไชย (Meechai)</option>
+                            <option value="รุ่งอรุณ">3. รุ่งอรุณ (Rungarun)</option>
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="payment-method">วิธีการชำระเงิน:</label>
+                        <select id="payment-method">
+                            <option value="Transfer">โอนเงินสด (Transfer)</option>
+                            <option value="COD">เก็บเงินปลายทาง (COD)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="cart-summary">
+                    <h3>ยอดรวมสุทธิ: <span id="cart-total">$0.00</span></h3>
+                    <button id="checkout-btn" class="button checkout-btn" disabled>ชำระเงิน (Checkout)</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2023 My POS System</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/pos.js') }}?v={{ range(1, 10000) | random }}"></script>
+</body>
+</html>

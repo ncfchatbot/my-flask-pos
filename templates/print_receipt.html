@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Receipt #{{ order.id }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS พื้นฐาน --- */
+        body {
+            font-family: 'Noto Sans Lao', sans-serif; /* ใช้ฟอนต์ลาว */
+            background-color: #eee;
+            margin: 0;
+            padding: 20px;
+            color: #000;
+        }
+
+        /* กล่องควบคุม (ซ่อนตอนพิมพ์) */
+        .control-panel {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: sans-serif; /* ส่วนควบคุมใช้ฟอนต์ปกติให้อ่านง่าย */
+        }
+        .control-panel select, .control-panel button {
+            padding: 8px 15px;
+            font-size: 1em;
+            margin: 5px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn-print { background-color: #28a745; color: white; border: none; font-weight: bold; }
+        .btn-print:hover { background-color: #218838; }
+        .btn-back { text-decoration: none; color: #666; margin-left: 15px; }
+
+        /* --- พื้นที่ใบเสร็จ (Printable Area) --- */
+        #printable-area {
+            background: #fff;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        /* --- สไตล์ตามขนาดกระดาษ --- */
+        .paper-80mm { max-width: 80mm; padding: 15px; font-size: 14px; }
+        .paper-58mm { max-width: 58mm; padding: 10px; font-size: 12px; }
+        .paper-58mm h1 { font-size: 1.4em; }
+        .paper-a4 { max-width: 210mm; padding: 25mm; font-size: 16px; }
+        .paper-a4 h1 { font-size: 2em; }
+        .paper-a4 .header, .paper-a4 .info-section { border-bottom-style: solid; }
+
+        /* --- สไตล์เนื้อหาภายในใบเสร็จ --- */
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
+        .header h1 { margin: 0; font-weight: normal; } /* ฟอนต์ลาวบางตัวหนาเกินไป */
+        .info-section { margin-bottom: 15px; border-bottom: 1px dashed #ddd; padding-bottom: 10px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .label { font-weight: bold; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { text-align: left; padding: 8px 0; border-bottom: 1px solid #eee; }
+        th { font-weight: bold; border-bottom: 2px solid #000; }
+        .text-right { text-align: right; }
+        
+        .totals { margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
+        .grand-total { font-size: 1.3em; font-weight: bold; }
+        .footer { text-align: center; margin-top: 30px; font-size: 0.9em; color: #666; }
+
+        /* --- CSS สำหรับการพิมพ์ --- */
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0; margin: 0; background: none; }
+            #printable-area { box-shadow: none; margin: 0; width: 100%; }
+            .paper-80mm, .paper-58mm, .paper-a4 { padding: 0; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="control-panel no-print">
+        <label for="paper-select"><strong>เลือกขนาดกระดาษ (Select Paper Size):</strong></label>
+        <br>
+        <select id="paper-select" onchange="changePaperSize()">
+            <option value="80mm" selected>Thermal Printer (80mm)</option>
+            <option value="58mm">Thermal Printer (58mm - Small)</option>
+            <option value="a4">Standard Paper (A4)</option>
+        </select>
+        <br><br>
+        <button onclick="window.print()" class="btn-print">🖨️ สั่งพิมพ์ (Print)</button>
+        <a href="{{ url_for('order_detail', order_id=order.id) }}" class="btn-back">กลับ (Back)</a>
+    </div>
+
+    <div id="printable-area" class="paper-80mm">
+        <div class="header">
+            <h1>ໃບບິນຮັບເງິນ (Receipt)</h1>
+            <p>My POS System Shop</p>
+        </div>
+
+        <div class="info-section">
+            <div class="info-row"><span class="label">ເລກທີໃບບິນ:</span> <span>#{{ order.id }}</span></div>
+            <div class="info-row"><span class="label">ວັນທີ:</span> <span>{{ order.order_date.strftime('%d/%m/%Y %H:%M') }}</span></div>
+        </div>
+
+        <div class="info-section">
+            <strong>ຂໍ້ມູນລູກຄ້າ (Customer):</strong><br>
+            <div class="info-row"><span class="label">ຊື່:</span> <span>{{ order.customer_name or '-' }}</span></div>
+            <div class="info-row"><span class="label">ໂທ:</span> <span>{{ order.customer_phone or '-' }}</span></div>
+            <div style="margin-top: 5px;"><span class="label">ທີ່ຢູ່:</span><br> {{ order.customer_address or '-' }}</div>
+        </div>
+
+        <div class="info-section">
+            <strong>ການຈັດສົ່ງ (Shipping):</strong><br>
+            <div class="info-row">
+                <span class="label">ຂົນສົ່ງ:</span> 
+                <span>
+                    {% if order.transport_company == 'อนุชิต' %} ອະນຸຊິດ (Anuchit)
+                    {% elif order.transport_company == 'มีไชย' %} ມີໄຊ (Meechai)
+                    {% elif order.transport_company == 'รุ่งอรุณ' %} ຮຸ່ງອາລຸນ (Rungarun)
+                    {% else %} {{ order.transport_company or '-' }}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-row"><span class="label">ສາຂາ:</span> <span>{{ order.destination_branch or '-' }}</span></div>
+            <div class="info-row">
+                <span class="label">ຊໍາລະ:</span> 
+                <span>
+                {% if order.payment_method == 'COD' %} ເກັບປາຍທາງ (COD)
+                {% elif order.payment_method == 'Transfer' %} ໂອນເງິນສົດ (Transfer)
+                {% else %} -
+                {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ລາຍການ (Item)</th>
+                    <th class="text-right">ຈນ.</th>
+                    <th class="text-right">ລາຄາ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                    <tr>
+                        <td>{{ item.product_name }}</td>
+                        <td class="text-right">{{ item.quantity }}</td>
+                        <td class="text-right">LAK {{ "{:,.2f}".format(item.quantity * item.price_at_purchase) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="totals">
+            <div class="info-row grand-total">
+                <span class="label">ລວມທັງໝົດ (Total):</span>
+                <span>LAK {{ "{:,.2f}".format(order.total_price) }}</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>ຂອບໃຈທີ່ໃຊ້ບໍລິການ<br>Thank you!</p>
+        </div>
+    </div>
+
+    <script>
+        function changePaperSize() {
+            const select = document.getElementById('paper-select');
+            const printableArea = document.getElementById('printable-area');
+            printableArea.classList.remove('paper-80mm', 'paper-58mm', 'paper-a4');
+            printableArea.classList.add('paper-' + selectedSize.value);
+        }
+    </script>
+</body>
+</html>
