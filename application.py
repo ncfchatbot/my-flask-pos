@@ -70,10 +70,10 @@ def add_product():
         stock = int(request.form['stock'])
         code = request.form.get('code')
         cost = float(request.form.get('cost', 0.0))
-
+        
         image_filename = 'default.jpg'
         image_file = request.files['image']
-
+        
         if image_file and image_file.filename != '':
             image_filename = image_file.filename
             upload_folder = os.path.join('static', 'product_images')
@@ -87,8 +87,13 @@ def add_product():
         return redirect(url_for('index'))
     return render_template('add_product.html')
 
+# --- *** ส่วนสำคัญที่เพิ่มเข้ามาใหม่ *** ---
+# ฟังก์ชันนี้จะทำงานก่อนที่ Request แรกจะเข้ามา
+# เพื่อสร้างตาราง Database ทั้งหมดถ้ายังไม่มี
+with app.app_context():
+    db.create_all()
+    print("--- Database tables checked/created ---")
+
 # --- Main Entry Point (สำหรับ Local) ---
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
